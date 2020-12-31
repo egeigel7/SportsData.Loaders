@@ -1,0 +1,35 @@
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
+using SportsData.NbaDataLoaders.Shared.Services;
+
+namespace SportsData.NbaDataLoaders
+{
+    public class TimedNbaDataLoader
+    {
+        INbaApiService _service;
+
+        public TimedNbaDataLoader(INbaApiService service)
+        {
+            _service = service;
+        }
+
+        [FunctionName(nameof(TimedNbaDataLoader))]
+        public async Task Run([TimerTrigger("0 4 * * * *")]TimerInfo myTimer, ILogger log)
+        {
+            var date = DateTime.UtcNow.AddDays(-1);
+            // Call Nba Api games endpoint to get last night's games
+            var playedGames = await _service.GetGamesWithStatsByDateAsync(date);
+
+            // Call POST game data endpoint on API
+            var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));
+
+            await Task.WhenAll(tasks);
+
+        }
+    }
+}
