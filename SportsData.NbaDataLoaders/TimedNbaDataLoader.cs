@@ -19,7 +19,7 @@ namespace SportsData.NbaDataLoaders
         }
 
         [FunctionName(nameof(TimedNbaDataLoader))]
-        public async Task Run([TimerTrigger("0 4 * * * *")]TimerInfo myTimer, ILogger log)
+        public async Task Run([TimerTrigger("0 0 4 * * *")]TimerInfo myTimer, ILogger log)
         {
             var date = DateTime.UtcNow.AddDays(-1);
             // Call Nba Api games endpoint to get last night's games

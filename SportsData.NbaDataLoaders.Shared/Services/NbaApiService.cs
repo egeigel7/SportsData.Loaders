@@ -44,7 +44,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 mappedGames.Add(homeEnhancedStats);
                 // Enhanced visiting team stats
                 var enhancedVisitingTeamStats = gameStats.Statistics.Where(s => s.TeamId == game.VTeam.TeamId).First();
-                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, game.VTeam, enhancedHomeStats, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
+                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, game.VTeam, enhancedVisitingTeamStats, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
                 mappedGames.Add(visitingEnhancedStats);
             }
             return mappedGames;
