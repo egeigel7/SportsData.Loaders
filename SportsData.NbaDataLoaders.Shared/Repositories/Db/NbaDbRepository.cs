@@ -13,28 +13,28 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
     public class NbaDbRepository : INbaDbRepository
     {
         // The Azure Cosmos DB endpoint for running this sample.
-        private static readonly string EndpointUri = "https://sportsdatadbacct.documents.azure.com:443/";
+        private static readonly string EndpointUri = Environment.GetEnvironmentVariable("NbaDatabaseUri");
         // The primary key for the Azure Cosmos account.
-        private static readonly string PrimaryKey = "BVDWQcpVuWu9aqpwU4OLGXppJhLwaokwQzdjmg1PxhbxsAaVW357p1rNYXkReZIyA3WH9yVuvyqNYU9AWWD1NQ==";
+        private static readonly string PrimaryKey = Environment.GetEnvironmentVariable("NbaDatabasePrimaryKey");
 
         // The Cosmos client instance
-        private CosmosClient cosmosClient;
+        private CosmosClient CosmosClient;
 
         // The container we will create.
-        private Container container;
+        private Container Container;
 
         // The name of the database and container we will create
-        private string databaseId = "BasketballDatabase";
-        private string containerId = "Teams";
+        private string DatabaseName = Environment.GetEnvironmentVariable("NbaDatabaseName");
+        private string TeamsContainerName = Environment.GetEnvironmentVariable("TeamsCollectionName");
 
         public NbaDbRepository()
         {
             // Create a new instance of the Cosmos Client in Gateway mode
-            cosmosClient = new CosmosClient(EndpointUri, PrimaryKey, new CosmosClientOptions()
+            CosmosClient = new CosmosClient(EndpointUri, PrimaryKey, new CosmosClientOptions()
             {
                 ConnectionMode = Microsoft.Azure.Cosmos.ConnectionMode.Gateway
             });
-            container = cosmosClient.GetContainer(databaseId, containerId);
+            Container = CosmosClient.GetContainer(DatabaseName, TeamsContainerName);
         }
 
         public async Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(NbaTeamPerformanceDbDto dto)
@@ -43,16 +43,16 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             try
             {
                 // Read the item to see if it exists.  
-                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.container.ReadItemAsync<NbaTeamPerformanceDbDto>(dto.Id, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.Container.ReadItemAsync<NbaTeamPerformanceDbDto>(dto.Id, partitionKey);
                 Console.WriteLine("Item in database with id: {0} already exists\n", teamPerformanceResponse.Resource.Id);
                 NbaTeamPerformanceDbDto updatedDto = UpdateTeamPerformances(dto, teamPerformanceResponse.Resource);
-                ItemResponse<NbaTeamPerformanceDbDto> response = await container.UpsertItemAsync(updatedDto, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> response = await Container.UpsertItemAsync(updatedDto, partitionKey);
                 return response.Resource;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
                 // Create an item in the container representing the Team Performance. 
-                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.container.CreateItemAsync<NbaTeamPerformanceDbDto>(dto, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.Container.CreateItemAsync<NbaTeamPerformanceDbDto>(dto, partitionKey);
 
                 // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
                 Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", teamPerformanceResponse.Resource.Id, teamPerformanceResponse.RequestCharge);

@@ -15,7 +15,9 @@ namespace SportsData.Infrastructure.Repositories.Nba
     public class NbaApiRepository : INbaApiRepository
     {
         private readonly HttpClient _client;
-
+        private readonly string NbaApiUrl = $"https://{Environment.GetEnvironmentVariable("NbaApiUri")}";
+        private readonly string NbaApiHostName = Environment.GetEnvironmentVariable("NbaApiUri");
+        private readonly string NbaApiKey = Environment.GetEnvironmentVariable("NbaApiKey");
         public NbaApiRepository(IHttpClientFactory factory)
         {
             _client = factory.CreateClient();
@@ -23,16 +25,11 @@ namespace SportsData.Infrastructure.Repositories.Nba
 
         public async Task AddTeamPerformanceAsync(AddTeamPerformanceRequestDto teamPerformanceStats)
         {
-            var updateTeamDataUrl = $"http://localhost:7071/api/HttpNbaTeamStatsDataLoader";
+            var updateTeamDataUrl = Environment.GetEnvironmentVariable("UpdateTeamDataUri");
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(updateTeamDataUrl),
-                //Headers =
-                //{
-                //    { "x-rapidapi-key", "ea61dbc290msh26d23555f5b2f27p15cf70jsn8fce5f15677a" },
-                //    { "x-rapidapi-host", "api-nba-v1.p.rapidapi.com" },
-                //},
                 Content = new StringContent(JsonConvert.SerializeObject(teamPerformanceStats), Encoding.UTF8, "application/json")
         };
             using (var response = await _client.SendAsync(request))
@@ -51,8 +48,8 @@ namespace SportsData.Infrastructure.Repositories.Nba
                 RequestUri = new Uri(nbaApiUrl),
                 Headers =
                 {
-                    { "x-rapidapi-key", "ea61dbc290msh26d23555f5b2f27p15cf70jsn8fce5f15677a" },
-                    { "x-rapidapi-host", "api-nba-v1.p.rapidapi.com" },
+                    { "x-rapidapi-key", NbaApiKey },
+                    { "x-rapidapi-host", NbaApiHostName },
                 },
             };
             using (var response = await _client.SendAsync(request))
@@ -67,15 +64,15 @@ namespace SportsData.Infrastructure.Repositories.Nba
 
         public async Task<GetStatsByGameIdResponseDto> GetStatsByGameIdAsync(string gameId)
         {
-            var nbaApiUrl = $"https://api-nba-v1.p.rapidapi.com/statistics/games/gameId/{gameId}";
+            var nbaApiUrl = $"{NbaApiUrl}/statistics/games/gameId/{gameId}";
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(nbaApiUrl),
                 Headers =
                 {
-                    { "x-rapidapi-key", "ea61dbc290msh26d23555f5b2f27p15cf70jsn8fce5f15677a" },
-                    { "x-rapidapi-host", "api-nba-v1.p.rapidapi.com" },
+                    { "x-rapidapi-key",  NbaApiKey },
+                    { "x-rapidapi-host", NbaApiHostName },
                 },
             };
             using (var response = await _client.SendAsync(request))
