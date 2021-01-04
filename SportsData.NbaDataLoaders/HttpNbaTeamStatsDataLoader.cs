@@ -21,7 +21,7 @@ namespace SportsData.NbaDataLoaders
             [CosmosDB(
                 databaseName: "BasketballDatabase",
                 collectionName: "Games",
-                ConnectionStringSetting = "CosmosDBConnection")]out NbaTeamGameDbDto document,
+                ConnectionStringSetting = "CosmosDbConnection")]out NbaTeamGameDbDto document,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
