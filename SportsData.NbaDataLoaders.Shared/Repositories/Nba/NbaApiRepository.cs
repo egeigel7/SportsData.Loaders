@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba;
@@ -18,9 +19,11 @@ namespace SportsData.Infrastructure.Repositories.Nba
         private readonly string NbaApiUrl = $"https://{Environment.GetEnvironmentVariable("NbaApiUri")}";
         private readonly string NbaApiHostName = Environment.GetEnvironmentVariable("NbaApiUri");
         private readonly string NbaApiKey = Environment.GetEnvironmentVariable("NbaApiKey");
-        public NbaApiRepository(IHttpClientFactory factory)
+        private readonly ILogger _logger;
+        public NbaApiRepository(IHttpClientFactory factory, ILogger log)
         {
             _client = factory.CreateClient();
+            _logger = log;
         }
 
         public async Task AddTeamPerformanceAsync(AddTeamPerformanceRequestDto teamPerformanceStats)
@@ -31,7 +34,7 @@ namespace SportsData.Infrastructure.Repositories.Nba
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(updateTeamDataUrl),
                 Content = new StringContent(JsonConvert.SerializeObject(teamPerformanceStats), Encoding.UTF8, "application/json")
-        };
+            };
             using (var response = await _client.SendAsync(request))
             {
                 response.EnsureSuccessStatusCode();

@@ -52,7 +52,8 @@ namespace SportsData.NbaDataLoaders.Shared.Services
 
         public async Task AddTeamPerformanceDataAsync(AddTeamPerformanceRequestDto teamPerformanceStats)
         {
-            _repository.AddTeamPerformanceAsync(teamPerformanceStats);
+
+            await _repository.AddTeamPerformanceAsync(teamPerformanceStats);
         }
 
         private AddTeamPerformanceRequestDto EnhanceStats(DateTime startTime, NbaApiGameContestantDto team, GameStatisticsDto stats, int opponentsPointsScored, string seasonYear)
