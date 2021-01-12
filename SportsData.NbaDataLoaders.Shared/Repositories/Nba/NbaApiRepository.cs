@@ -28,8 +28,13 @@ namespace SportsData.Infrastructure.Repositories.Nba
 
         public async Task AddTeamPerformanceAsync(AddTeamPerformanceRequestDto teamPerformanceStats)
         {
-            var updateTeamDataUrl = Environment.GetEnvironmentVariable("UpdateTeamDataUri");
-            var apiKey = Environment.GetEnvironmentVariable("HttpLoaderApiKey");
+            var updateTeamDataUrl = Environment.GetEnvironmentVariable("UpdateTeamDataUri") ?? "";
+            var apiKey = Environment.GetEnvironmentVariable("HttpLoaderApiKey") ?? "";
+            if (String.IsNullOrEmpty(apiKey) || String.IsNullOrEmpty(updateTeamDataUrl))
+            {
+                _logger.LogError("Configuration values for formatting update url were not found");
+                return;
+            }
             var formattedUrl = $"{updateTeamDataUrl}?code={apiKey}";
             var request = new HttpRequestMessage
             {

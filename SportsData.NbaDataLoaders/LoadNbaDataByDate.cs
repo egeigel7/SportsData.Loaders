@@ -28,6 +28,15 @@ namespace SportsData.NbaDataLoaders
             // Call Nba Api games endpoint to get last night's games
             var playedGames = await _service.GetGamesWithStatsByDateAsync(date);
 
+            if (playedGames.Count > 0)
+            {
+                log.LogInformation("Games found, loading now");
+            }
+            else
+            {
+                log.LogInformation("No games found");
+            }
+
             // Call POST game data endpoint on API
             var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));
 
