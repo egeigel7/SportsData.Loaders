@@ -29,10 +29,12 @@ namespace SportsData.Infrastructure.Repositories.Nba
         public async Task AddTeamPerformanceAsync(AddTeamPerformanceRequestDto teamPerformanceStats)
         {
             var updateTeamDataUrl = Environment.GetEnvironmentVariable("UpdateTeamDataUri");
+            var apiKey = Environment.GetEnvironmentVariable("HttpLoaderApiKey");
+            var formattedUrl = $"{updateTeamDataUrl}?code={apiKey}";
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(updateTeamDataUrl),
+                RequestUri = new Uri(formattedUrl),
                 Content = new StringContent(JsonConvert.SerializeObject(teamPerformanceStats), Encoding.UTF8, "application/json")
             };
             using (var response = await _client.SendAsync(request))
