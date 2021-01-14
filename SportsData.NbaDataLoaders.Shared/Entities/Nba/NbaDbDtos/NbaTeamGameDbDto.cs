@@ -5,9 +5,9 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
     public class NbaTeamGameDbDto
     {
-        public NbaTeamGameDbDto(string startTime, string teamId, string teamKey, string fullName, string nickname, Statistics stats)
+        public NbaTeamGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, Statistics stats)
         {
-            Date = DateTime.Parse(startTime); 
+            Date = DateTime.Parse(date); 
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));

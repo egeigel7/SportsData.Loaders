@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SportsData.NbaDataLoaders.Shared.Services;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
+using SportsData.NbaDataLoaders.Shared.Exceptions;
 
 namespace SportsData.NbaDataLoaders
 {
@@ -25,7 +26,7 @@ namespace SportsData.NbaDataLoaders
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
+ 
             _service.UpdateTeamStatsAsync(data).Wait();
 
             document = _service.CreateTeamGameFromPerformance(data);

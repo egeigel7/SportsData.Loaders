@@ -1,6 +1,7 @@
 ﻿using SportsData.NbaDataLoaders.Shared.Entities.Nba;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
+using SportsData.NbaDataLoaders.Shared.Exceptions;
 using SportsData.NbaDataLoaders.Shared.Repositories.Db;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,8 @@ namespace SportsData.NbaDataLoaders.Shared.Services
         public NbaTeamGameDbDto CreateTeamGameFromPerformance(AddTeamPerformanceRequestDto dto)
         {
             // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
-            var partitionKey = String.Join("-", LEAGUE_NAME, dto.FullName);
-            var teamId = String.Join("-", dto.SeasonYear, dto.FullName);
+            var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
+            var teamId = string.Join("-", dto.SeasonYear, dto.FullName.Trim().ToUpperInvariant());
             return new NbaTeamGameDbDto(
                 dto.GameStartTime,
                 teamId,
@@ -33,8 +34,13 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             );
         }
 
-        public Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(AddTeamPerformanceRequestDto dto)
+        public async Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(AddTeamPerformanceRequestDto dto)
         {
+
+            if (await _repository.DoesGameExist(dto))
+            {
+                throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.FullName} on {dto.GameStartTime}");
+            }
             NbaTeamPerformanceDbDto dbDto = new NbaTeamPerformanceDbDto(
                 dto.SeasonYear,
                 dto.ShortName,
@@ -44,7 +50,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 1,
                 dto.Stats
             );
-            return _repository.UpdateTeamStatsAsync(dbDto);
+            return await _repository.UpdateTeamStatsAsync(dbDto);
         }
     }
 }
