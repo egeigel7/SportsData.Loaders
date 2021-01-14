@@ -22,12 +22,19 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         public string Id { get { return String.Join("-", SeasonYear.Trim(), TeamKey); } }
         [JsonProperty("teamKey")]
         public string TeamKey { get { return String.Join("-", LEAGUE_NAME, FullName.Trim().ToUpperInvariant()); }  }
+        [JsonProperty("seasonYear")]
         public string SeasonYear { get; }
+        [JsonProperty("shortName")]
         public string ShortName { get; }
+        [JsonProperty("fullName")]
         public string FullName { get; }
+        [JsonProperty("nickName")]
         public string Nickname { get; }
+        [JsonProperty("logoUrl")]
         public string LogoUrl { get; }
+        [JsonProperty("gamesPlayed")]
         public int GamesPlayed { get; set; }
+        [JsonProperty("stats")]
         public Statistics Stats { get; }
     }
 }

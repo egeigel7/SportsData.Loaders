@@ -5,7 +5,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba
 {
     public class Game
     {
-        public Game(string seasonYear, string league, string gameId, DateTime startTimeUTC, DateTime endTimeUTC, string arena, string city, string country, string clock, string gameDuration, string currentPeriod, string halftime, string endOfPeriod
+        public Game(string seasonYear, string league, string gameId, DateTime startTimeUTC, DateTime? endTimeUTC, string arena, string city, string country, string clock, string gameDuration, string currentPeriod, string halftime, string endOfPeriod
             , string seasonStage, string statusShortGame, string statusGame, Contestant vTeam, Contestant hTeam)
         {
             SeasonYear = seasonYear;
@@ -31,7 +31,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba
         public string League { get; }
         public string GameId { get; }
         public DateTime StartTimeUTC { get; }
-        public DateTime EndTimeUTC { get; }
+        public DateTime? EndTimeUTC { get; }
         public string Arena { get; }
         public string City { get; }
         public string Country { get; }

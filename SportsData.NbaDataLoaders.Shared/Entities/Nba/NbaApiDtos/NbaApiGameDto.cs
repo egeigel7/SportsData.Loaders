@@ -6,7 +6,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaApiDtos
 {
     public class NbaApiGameDto
     {
-        public NbaApiGameDto(string seasonYear, string league, string gameId, DateTime startTimeUTC, DateTime endTimeUTC, string arena, string city, string country, string clock, string gameDuration, string currentPeriod, string halftime, string endOfPeriod
+        public NbaApiGameDto(string seasonYear, string league, string gameId, DateTime startTimeUTC, DateTime? endTimeUTC, string arena, string city, string country, string clock, string gameDuration, string currentPeriod, string halftime, string endOfPeriod
             , string seasonStage, string statusShortGame, string statusGame, NbaApiGameContestantDto vTeam, NbaApiGameContestantDto hTeam)
         {
             SeasonYear = seasonYear;
@@ -32,7 +32,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaApiDtos
         public string League { get; }
         public string GameId { get; }
         public DateTime StartTimeUTC { get; }
-        public DateTime EndTimeUTC { get; }
+        public DateTime? EndTimeUTC { get; }
         public string Arena { get; }
         public string City { get; }
         public string Country { get; }

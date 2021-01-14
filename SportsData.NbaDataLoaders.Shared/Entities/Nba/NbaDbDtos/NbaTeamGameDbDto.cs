@@ -14,14 +14,19 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
+        [JsonProperty("date")]
         public DateTime Date { get; }
         [JsonProperty("id")]
         public string Id { get { return Date.ToString("yyyyMMdd"); } }
+        [JsonProperty("teamId")]
         public string TeamId { get; }
         [JsonProperty("teamKey")]
         public string TeamKey { get; }
+        [JsonProperty("fullName")]
         public string FullName { get; }
+        [JsonProperty("nickName")]
         public string Nickname { get; }
+        [JsonProperty("stats")]
         public Statistics Stats { get; }
         }
 }

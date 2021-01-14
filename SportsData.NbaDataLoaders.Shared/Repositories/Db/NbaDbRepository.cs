@@ -74,7 +74,7 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
                 // Create an item in the container representing the Team Performance. 
-                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.TeamsContainer.CreateItemAsync<NbaTeamPerformanceDbDto>(dto, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.TeamsContainer.CreateItemAsync(dto, partitionKey);
 
                 // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
                 Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", teamPerformanceResponse.Resource.Id, teamPerformanceResponse.RequestCharge);
