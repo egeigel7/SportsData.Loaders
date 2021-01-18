@@ -32,7 +32,6 @@ namespace SportsData.NbaDataLoaders
             builder.Services.AddSingleton<INbaUpdateService, NbaUpdateService>();
             builder.Services.AddSingleton<INbaApiRepository, NbaApiRepository>();
             builder.Services.AddSingleton<INbaDbRepository, NbaDbRepository>();
-            builder.Services.AddSingleton<IAddTeamGameFromPerformanceMapper, AddTeamGameFromPerformanceMapper>();
             builder.Services.AddSingleton<IGetGamesByDateResponseMapper, GetGamesByDateResponseMapper>();
         }
     }

@@ -30,6 +30,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 partitionKey,
                 dto.FullName,
                 dto.Nickname,
+                dto.OpponentName,
                 dto.Stats
             );
         }

@@ -5,13 +5,14 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
     public class NbaTeamGameDbDto
     {
-        public NbaTeamGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, Statistics stats)
+        public NbaTeamGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, Statistics stats)
         {
             Date = DateTime.Parse(date); 
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
+            OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
         [JsonProperty("date")]
@@ -26,6 +27,8 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         public string FullName { get; }
         [JsonProperty("nickName")]
         public string Nickname { get; }
+        [JsonProperty("opponentId")]
+        public string OpponentId { get; }
         [JsonProperty("stats")]
         public Statistics Stats { get; }
         }

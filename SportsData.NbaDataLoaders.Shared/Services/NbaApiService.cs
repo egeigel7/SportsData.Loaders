@@ -15,12 +15,10 @@ namespace SportsData.NbaDataLoaders.Shared.Services
     {
         private readonly INbaApiRepository _repository;
         private readonly IGetGamesByDateResponseMapper _mapper;
-        private readonly IAddTeamGameFromPerformanceMapper _addGameMapper;
-        public NbaApiService(INbaApiRepository repository, IGetGamesByDateResponseMapper mapper, IAddTeamGameFromPerformanceMapper addGameMapper)
+        public NbaApiService(INbaApiRepository repository, IGetGamesByDateResponseMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
-            _addGameMapper = addGameMapper;
         }
 
         public async Task<List<Game>> GetGamesByDateAsync(DateTime date)
@@ -42,11 +40,11 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 var gameStats = await _repository.GetStatsByGameIdAsync(game.GameId);
                 // Enhanced home team stats
                 var enhancedHomeStats = gameStats.Statistics.Where(s => s.TeamId == game.HTeam.TeamId).First();
-                AddTeamPerformanceRequestDto homeEnhancedStats = EnhanceStats(game.StartTimeUTC, game.HTeam, enhancedHomeStats, Convert.ToInt32(game.VTeam.Score.Points), game.SeasonYear);
+                AddTeamPerformanceRequestDto homeEnhancedStats = EnhanceStats(game.StartTimeUTC, game.HTeam, enhancedHomeStats, game.VTeam.FullName, Convert.ToInt32(game.VTeam.Score.Points), game.SeasonYear);
                 mappedGames.Add(homeEnhancedStats);
                 // Enhanced visiting team stats
                 var enhancedVisitingTeamStats = gameStats.Statistics.Where(s => s.TeamId == game.VTeam.TeamId).First();
-                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, game.VTeam, enhancedVisitingTeamStats, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
+                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, game.VTeam, enhancedVisitingTeamStats, game.HTeam.FullName, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
                 mappedGames.Add(visitingEnhancedStats);
             }
             return mappedGames;
@@ -58,7 +56,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             await _repository.AddTeamPerformanceAsync(teamPerformanceStats);
         }
 
-        private AddTeamPerformanceRequestDto EnhanceStats(DateTime startTime, NbaApiGameContestantDto team, GameStatisticsDto stats, int opponentsPointsScored, string seasonYear)
+        private AddTeamPerformanceRequestDto EnhanceStats(DateTime startTime, NbaApiGameContestantDto team, GameStatisticsDto stats, string opponentsName, int opponentsPointsScored, string seasonYear)
         {
             Statistics enhancedStats = new Statistics(
                 Convert.ToInt32(stats.Points),
@@ -96,6 +94,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 team.FullName,
                 team.NickName,
                 team.Logo,
+                opponentsName,
                 enhancedStats
             );
         }
