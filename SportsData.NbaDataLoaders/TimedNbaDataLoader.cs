@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
 using SportsData.NbaDataLoaders.Shared.Services;
 
 namespace SportsData.NbaDataLoaders
@@ -19,7 +20,10 @@ namespace SportsData.NbaDataLoaders
         }
 
         [FunctionName(nameof(TimedNbaDataLoader))]
-        public async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer, ILogger log)
+        [StorageAccount("AzureWebJobsStorage")]
+        public async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer
+            , [Queue("new-game"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
+            , ILogger log)
         {
             var date = DateTime.UtcNow.AddDays(-1);
             // Call Nba Api games endpoint to get last night's games
@@ -34,10 +38,12 @@ namespace SportsData.NbaDataLoaders
                 log.LogInformation("No games found");
             }
 
-            // Call POST game data endpoint on API
-            var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));
+            playedGames.ForEach(game => newGames.Add(game));
 
-            await Task.WhenAll(tasks);
+            // Call POST game data endpoint on API (deprecated in favor of putting games on a queue instead of calling directly
+            //var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));
+
+            //await Task.WhenAll(tasks);
 
         }
     }
