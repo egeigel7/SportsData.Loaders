@@ -1,43 +1,38 @@
 ﻿using Newtonsoft.Json;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaOddsDtos;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
-    public class NbaTeamGameDbDto
+    public class NbaGameOddsDbDto
     {
-        public NbaTeamGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string status, Statistics stats)
+        public NbaGameOddsDbDto(DateTime date, string teamKey, string fullName, string opponentId, string gameStatus, OverUnder overUnder, Spread spread)
         {
-            Date = DateTime.Parse(date); 
-            TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
+            Date = date;
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
-            Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
-            Status = status ?? throw new ArgumentNullException(nameof(status));
-            Stats = stats ?? throw new ArgumentNullException(nameof(stats));
+            OverUnder = overUnder ?? throw new ArgumentNullException(nameof(overUnder));
+            GameStatus = gameStatus ?? throw new ArgumentNullException(nameof(gameStatus));
+            Spread = spread ?? throw new ArgumentNullException(nameof(spread));
         }
         [JsonProperty("date")]
         public DateTime Date { get; }
         [JsonProperty("id")]
         public string Id { get { return Date.ToString("yyyyMMdd"); } }
-        [JsonProperty("teamId")]
-        public string TeamId { get; }
         [JsonProperty("teamKey")]
         public string TeamKey { get; }
         [JsonProperty("fullName")]
         public string FullName { get; }
-        [JsonProperty("nickName")]
-        public string Nickname { get; }
         [JsonProperty("opponentId")]
         public string OpponentId { get; }
         [JsonProperty("status")]
-        public string Status { get; }
+        public string GameStatus { get; }
         [JsonProperty("overUnder")]
         public OverUnder OverUnder { get; }
         [JsonProperty("spread")]
         public Spread Spread { get; }
-        [JsonProperty("stats")]
-        public Statistics Stats { get; }
     }
 }

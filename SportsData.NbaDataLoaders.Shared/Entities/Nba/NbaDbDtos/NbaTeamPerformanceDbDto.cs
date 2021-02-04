@@ -8,7 +8,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
     public class NbaTeamPerformanceDbDto
     {
         private const string LEAGUE_NAME = "NBA";
-        public NbaTeamPerformanceDbDto(string seasonYear, string shortName, string fullName, string nickname, string logoUrl, int gamesPlayed,Statistics stats)
+        public NbaTeamPerformanceDbDto(string seasonYear, string shortName, string fullName, string nickname, string logoUrl, int gamesPlayed, Records records, Statistics stats)
         {
             SeasonYear = seasonYear ?? throw new ArgumentNullException(nameof(seasonYear));
             ShortName = shortName ?? throw new ArgumentNullException(nameof(shortName));
@@ -16,6 +16,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl));
             GamesPlayed = gamesPlayed;
+            Records = records;
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
         [JsonProperty("id")]
@@ -34,6 +35,8 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         public string LogoUrl { get; }
         [JsonProperty("gamesPlayed")]
         public int GamesPlayed { get; set; }
+        [JsonProperty("records")]
+        public Records Records { get; set; }
         [JsonProperty("stats")]
         public Statistics Stats { get; }
     }

@@ -5,6 +5,7 @@ using SportsData.Infrastructure.Repositories.Nba;
 using SportsData.NbaDataLoaders;
 using SportsData.NbaDataLoaders.Shared.Mappers.Nba;
 using SportsData.NbaDataLoaders.Shared.Repositories.Db;
+using SportsData.NbaDataLoaders.Shared.Repositories.Odds;
 using SportsData.NbaDataLoaders.Shared.Services;
 using System;
 
@@ -30,9 +31,12 @@ namespace SportsData.NbaDataLoaders
             builder.Services.AddHttpClient();
             builder.Services.AddSingleton<INbaApiService, NbaApiService>();
             builder.Services.AddSingleton<INbaUpdateService, NbaUpdateService>();
+            builder.Services.AddSingleton<INbaOddsService, NbaOddsService>();
+            builder.Services.AddSingleton<INbaOddsRepository, NbaOddsRepository>();
             builder.Services.AddSingleton<INbaApiRepository, NbaApiRepository>();
             builder.Services.AddSingleton<INbaDbRepository, NbaDbRepository>();
             builder.Services.AddSingleton<IGetGamesByDateResponseMapper, GetGamesByDateResponseMapper>();
+            builder.Services.AddTransient<IOddsRequestToDbDtoMapper, OddsRequestToDbDtoMapper>();
         }
     }
 }

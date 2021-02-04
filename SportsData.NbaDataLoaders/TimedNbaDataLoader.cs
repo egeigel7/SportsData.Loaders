@@ -25,7 +25,7 @@ namespace SportsData.NbaDataLoaders
             , [Queue("new-game"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
             , ILogger log)
         {
-            var date = DateTime.UtcNow.AddDays(-1);
+            var date = DateTime.UtcNow;
             // Call Nba Api games endpoint to get last night's games
             var playedGames = await _service.GetGamesWithStatsByDateAsync(date);
 

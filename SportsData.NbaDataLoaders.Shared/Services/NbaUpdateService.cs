@@ -1,4 +1,5 @@
-﻿using SportsData.NbaDataLoaders.Shared.Entities.Nba;
+﻿using Microsoft.Extensions.Logging;
+using SportsData.NbaDataLoaders.Shared.Entities.Nba;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
 using SportsData.NbaDataLoaders.Shared.Exceptions;
@@ -14,9 +15,11 @@ namespace SportsData.NbaDataLoaders.Shared.Services
     {
         private const string LEAGUE_NAME = "NBA";
         INbaDbRepository _repository;
-        public NbaUpdateService(INbaDbRepository repository)
+        ILogger _logger;
+        public NbaUpdateService(INbaDbRepository repository, ILogger logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public NbaTeamGameDbDto CreateTeamGameFromPerformance(AddTeamPerformanceRequestDto dto)
@@ -31,27 +34,80 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 dto.FullName,
                 dto.Nickname,
                 dto.OpponentName,
+                "COMPLETED",
                 dto.Stats
             );
         }
 
-        public async Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(AddTeamPerformanceRequestDto dto)
+        public CompletedGameDbDto CreateCompletedGameFromPerformance(AddTeamPerformanceRequestDto dto)
         {
+            // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
+            var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
+            var teamId = string.Join("-", dto.SeasonYear, partitionKey);
+            return new CompletedGameDbDto(
+                dto.GameStartTime,
+                teamId,
+                partitionKey,
+                dto.FullName,
+                dto.Nickname,
+                dto.OpponentName,
+                "COMPLETED",
+                dto.Stats
+            );
+        }
 
-            if (await _repository.DoesGameExist(dto))
+        public async Task<CompletedGameDbDto> UpdateTeamStatsAsync(AddTeamPerformanceRequestDto dto)
+        {
+            Records recordsToAdd = new Records();
+            try
             {
-                throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.FullName} on {dto.GameStartTime}");
-            }
-            NbaTeamPerformanceDbDto dbDto = new NbaTeamPerformanceDbDto(
+                var game = await _repository.GetUpcomingGameAsync(dto);
+                if (game.Status != "UPCOMING")
+                    throw new IncorrectGameStatusException("The game was not in upcoming status when trying to process");
+                var gameSpread = (dto.Stats.PointsFor - dto.Stats.PointsAgainst);
+                var oddsSpread = 0 - double.Parse(game.Spread.Value);
+                var gameTotal = (dto.Stats.PointsFor + dto.Stats.PointsAgainst);
+                var oddsTotal = double.Parse(game.OverUnder.Total);
+                //Process Spread
+                if (gameSpread > oddsSpread)
+                    recordsToAdd.ATSWins++;
+                else if (gameSpread < oddsSpread)
+                    recordsToAdd.ATSLosses++;
+                else recordsToAdd.ATSPushes++;
+                //Process Over Under
+                if (gameTotal > oddsTotal)
+                    recordsToAdd.OverCount++;
+                else if (gameTotal < oddsTotal)
+                    recordsToAdd.UnderCount++;
+                else recordsToAdd.OverUnderPushes++;
+                //Process Result
+                if (dto.Stats.PointsFor > dto.Stats.PointsAgainst)
+                    recordsToAdd.SeasonWins++;
+                else recordsToAdd.SeasonLosses++;
+
+                NbaTeamPerformanceDbDto dbDto = new NbaTeamPerformanceDbDto(
                 dto.SeasonYear,
                 dto.ShortName,
                 dto.FullName,
                 dto.Nickname,
                 dto.LogoUrl,
                 1,
+                recordsToAdd,
                 dto.Stats
-            );
-            return await _repository.UpdateTeamStatsAsync(dbDto);
+                );
+                await _repository.UpdateTeamStatsAsync(dbDto);
+                return CreateCompletedGameFromPerformance(dto);
+            }
+            catch (GameDoesNotExistException ex)
+            {
+                _logger.LogError(ex.Message);
+                throw ex;
+            }
+            catch (IncorrectGameStatusException ex)
+            {
+                _logger.LogError(ex.Message);
+                throw ex;
+            }
         }
     }
 }

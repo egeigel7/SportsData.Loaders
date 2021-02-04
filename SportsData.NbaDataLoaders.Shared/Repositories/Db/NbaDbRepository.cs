@@ -3,6 +3,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
+using SportsData.NbaDataLoaders.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -59,6 +60,24 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             }
         }
 
+        public async Task<UpcomingGameDbDto> GetUpcomingGameAsync(AddTeamPerformanceRequestDto dto)
+        {
+            var partitionKey = new Microsoft.Azure.Cosmos.PartitionKey(string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant()));
+            var id = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
+            try
+            {
+                // Read the item to see if it exists.  
+                ItemResponse<UpcomingGameDbDto> teamPerformanceResponse = await GamesContainer.ReadItemAsync<UpcomingGameDbDto>(id, partitionKey);
+                var game = teamPerformanceResponse.Resource;
+                Console.WriteLine("Item in database with id: {0} already exists\n", teamPerformanceResponse.Resource.Id);
+                return teamPerformanceResponse.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new GameDoesNotExistException("The game does not exist when trying to get it.");
+            }
+        }
+
         public async Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(NbaTeamPerformanceDbDto dto)
         {
             var partitionKey = new Microsoft.Azure.Cosmos.PartitionKey(dto.TeamKey);
@@ -84,6 +103,14 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
 
         private NbaTeamPerformanceDbDto UpdateTeamPerformances(NbaTeamPerformanceDbDto newDto, NbaTeamPerformanceDbDto originalDto)
         {
+            originalDto.Records.SeasonWins += newDto.Records.SeasonWins;
+            originalDto.Records.SeasonLosses += newDto.Records.SeasonLosses;
+            originalDto.Records.ATSWins += newDto.Records.ATSWins;
+            originalDto.Records.ATSLosses += newDto.Records.ATSLosses;
+            originalDto.Records.ATSPushes += newDto.Records.ATSPushes;
+            originalDto.Records.OverCount += newDto.Records.OverCount;
+            originalDto.Records.UnderCount += newDto.Records.UnderCount;
+            originalDto.Records.OverUnderPushes += newDto.Records.OverUnderPushes;
             originalDto.Stats.Assists += newDto.Stats.Assists;
             originalDto.Stats.Blocks += newDto.Stats.Blocks;
             originalDto.Stats.DefReb += newDto.Stats.DefReb;

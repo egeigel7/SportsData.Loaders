@@ -8,5 +8,6 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
     {
         Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(NbaTeamPerformanceDbDto dto);
         Task<bool> DoesGameExist(AddTeamPerformanceRequestDto dto);
+        Task<UpcomingGameDbDto> GetUpcomingGameAsync(AddTeamPerformanceRequestDto dto);
     }
 }
