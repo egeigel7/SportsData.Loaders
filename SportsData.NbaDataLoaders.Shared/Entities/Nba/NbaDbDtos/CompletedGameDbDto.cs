@@ -15,7 +15,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
-            Status = status ?? throw new ArgumentNullException(nameof(status));
+            Status = status;
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
         [JsonProperty("date")]

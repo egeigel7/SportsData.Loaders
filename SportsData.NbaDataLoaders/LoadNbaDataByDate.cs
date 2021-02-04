@@ -22,7 +22,7 @@ namespace SportsData.NbaDataLoaders
 
         [FunctionName(nameof(LoadNbaDataByDate))]
         public async void Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] LoadGamesByDateRequestDto dateString
-            , [Queue("new-game"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
+            , [Queue("past-game-stats"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
             , ILogger log)
         {
             DateTime date = DateTime.Parse(dateString.Date);

@@ -109,5 +109,35 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 throw ex;
             }
         }
+
+        public async Task<CompletedGameDbDto> UpdatePastTeamStatsOnlyAsync(AddTeamPerformanceRequestDto dto)
+        {
+            if(await _repository.DoesGameWithStatsExist(dto))
+                throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.FullName} on {dto.GameStartTime}");
+            try
+            {
+                NbaTeamPerformanceStatsOnlyDbDto dbDto = new NbaTeamPerformanceStatsOnlyDbDto(
+                dto.SeasonYear,
+                dto.ShortName,
+                dto.FullName,
+                dto.Nickname,
+                dto.LogoUrl,
+                1,
+                dto.Stats
+                );
+                await _repository.UpdateTeamStatsOnlyAsync(dbDto);
+                return CreateCompletedGameFromPerformance(dto);
+            }
+            catch (GameDoesNotExistException ex)
+            {
+                _logger.LogError(ex.Message);
+                throw ex;
+            }
+            catch (IncorrectGameStatusException ex)
+            {
+                _logger.LogError(ex.Message);
+                throw ex;
+            }
+        }
     }
 }

@@ -7,7 +7,8 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
     public interface INbaDbRepository
     {
         Task<NbaTeamPerformanceDbDto> UpdateTeamStatsAsync(NbaTeamPerformanceDbDto dto);
-        Task<bool> DoesGameExist(AddTeamPerformanceRequestDto dto);
+        Task<NbaTeamPerformanceStatsOnlyDbDto> UpdateTeamStatsOnlyAsync(NbaTeamPerformanceStatsOnlyDbDto dto);
+        Task<bool> DoesGameWithStatsExist(AddTeamPerformanceRequestDto dto);
         Task<UpcomingGameDbDto> GetUpcomingGameAsync(AddTeamPerformanceRequestDto dto);
     }
 }

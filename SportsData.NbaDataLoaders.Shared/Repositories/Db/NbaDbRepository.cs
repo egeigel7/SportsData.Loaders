@@ -43,14 +43,14 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             GamesContainer = CosmosClient.GetContainer(DatabaseName, GamesContainerName);
         }
 
-        public async Task<bool> DoesGameExist(AddTeamPerformanceRequestDto dto)
+        public async Task<bool> DoesGameWithStatsExist(AddTeamPerformanceRequestDto dto)
         {
             var partitionKey = new Microsoft.Azure.Cosmos.PartitionKey(string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant()));
             var id = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
             try
             {
                 // Read the item to see if it exists.  
-                ItemResponse<NbaTeamGameDbDto> teamPerformanceResponse = await GamesContainer.ReadItemAsync<NbaTeamGameDbDto>(id, partitionKey);
+                ItemResponse<CompletedGameDbDto> teamPerformanceResponse = await GamesContainer.ReadItemAsync<CompletedGameDbDto>(id, partitionKey);
                 Console.WriteLine("Item in database with id: {0} already exists\n", teamPerformanceResponse.Resource.Id);
                 return true;
             }
@@ -101,6 +101,29 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             }
         }
 
+        public async Task<NbaTeamPerformanceStatsOnlyDbDto> UpdateTeamStatsOnlyAsync(NbaTeamPerformanceStatsOnlyDbDto dto)
+        {
+            var partitionKey = new Microsoft.Azure.Cosmos.PartitionKey(dto.TeamKey);
+            try
+            {
+                // Read the item to see if it exists.  
+                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> teamPerformanceResponse = await this.TeamsContainer.ReadItemAsync<NbaTeamPerformanceStatsOnlyDbDto>(dto.Id, partitionKey);
+                Console.WriteLine("Item in database with id: {0} already exists\n", teamPerformanceResponse.Resource.Id);
+                NbaTeamPerformanceStatsOnlyDbDto updatedDto = UpdateTeamStatsOnly(dto, teamPerformanceResponse.Resource);
+                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> response = await TeamsContainer.UpsertItemAsync(updatedDto, partitionKey);
+                return response.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                // Create an item in the container representing the Team Performance. 
+                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> teamPerformanceResponse = await this.TeamsContainer.CreateItemAsync(dto, partitionKey);
+
+                // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
+                Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", teamPerformanceResponse.Resource.Id, teamPerformanceResponse.RequestCharge);
+                return teamPerformanceResponse.Resource;
+            }
+        }
+
         private NbaTeamPerformanceDbDto UpdateTeamPerformances(NbaTeamPerformanceDbDto newDto, NbaTeamPerformanceDbDto originalDto)
         {
             originalDto.Records.SeasonWins += newDto.Records.SeasonWins;
@@ -121,6 +144,34 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             originalDto.Stats.FTM += newDto.Stats.FTM;
             originalDto.Stats.OffReb += newDto.Stats.OffReb;
             originalDto.Stats.PFouls += newDto.Stats.PFouls; 
+            originalDto.Stats.PlusMinus += newDto.Stats.PlusMinus;
+            originalDto.Stats.PointsAgainst += newDto.Stats.PointsAgainst;
+            originalDto.Stats.PointsFor += newDto.Stats.PointsFor;
+            originalDto.Stats.PointsInPaint += newDto.Stats.PointsInPaint;
+            originalDto.Stats.PointsOffTurnovers += newDto.Stats.PointsOffTurnovers;
+            originalDto.Stats.SecondChancePoints += newDto.Stats.SecondChancePoints;
+            originalDto.Stats.Steals += newDto.Stats.Steals;
+            originalDto.Stats.TotReb += newDto.Stats.TotReb;
+            originalDto.Stats.TPA += newDto.Stats.TPA;
+            originalDto.Stats.TPM += newDto.Stats.TPM;
+            originalDto.Stats.Turnovers += newDto.Stats.Turnovers;
+            originalDto.GamesPlayed++;
+            //originalDto.Stats.Min = TimeSpan.Parse(originalDto.Stats.Min).Add(TimeSpan.Parse(newDto.Stats.Min)).ToString();
+            return originalDto;
+        }
+
+        private NbaTeamPerformanceStatsOnlyDbDto UpdateTeamStatsOnly(NbaTeamPerformanceStatsOnlyDbDto newDto, NbaTeamPerformanceStatsOnlyDbDto originalDto)
+        {
+            originalDto.Stats.Assists += newDto.Stats.Assists;
+            originalDto.Stats.Blocks += newDto.Stats.Blocks;
+            originalDto.Stats.DefReb += newDto.Stats.DefReb;
+            originalDto.Stats.FastBreakPoints += newDto.Stats.FastBreakPoints;
+            originalDto.Stats.FGA += newDto.Stats.FGA;
+            originalDto.Stats.FGM += newDto.Stats.FGM;
+            originalDto.Stats.FTA += newDto.Stats.FTA;
+            originalDto.Stats.FTM += newDto.Stats.FTM;
+            originalDto.Stats.OffReb += newDto.Stats.OffReb;
+            originalDto.Stats.PFouls += newDto.Stats.PFouls;
             originalDto.Stats.PlusMinus += newDto.Stats.PlusMinus;
             originalDto.Stats.PointsAgainst += newDto.Stats.PointsAgainst;
             originalDto.Stats.PointsFor += newDto.Stats.PointsFor;
