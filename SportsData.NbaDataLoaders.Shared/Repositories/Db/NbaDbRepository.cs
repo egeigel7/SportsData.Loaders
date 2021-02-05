@@ -101,22 +101,32 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             }
         }
 
-        public async Task<NbaTeamPerformanceStatsOnlyDbDto> UpdateTeamStatsOnlyAsync(NbaTeamPerformanceStatsOnlyDbDto dto)
+        public async Task<NbaTeamPerformanceDbDto> UpdateTeamStatsOnlyAsync(NbaTeamPerformanceStatsOnlyDbDto dto)
         {
             var partitionKey = new Microsoft.Azure.Cosmos.PartitionKey(dto.TeamKey);
             try
             {
                 // Read the item to see if it exists.  
-                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> teamPerformanceResponse = await this.TeamsContainer.ReadItemAsync<NbaTeamPerformanceStatsOnlyDbDto>(dto.Id, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.TeamsContainer.ReadItemAsync<NbaTeamPerformanceDbDto>(dto.Id, partitionKey);
                 Console.WriteLine("Item in database with id: {0} already exists\n", teamPerformanceResponse.Resource.Id);
-                NbaTeamPerformanceStatsOnlyDbDto updatedDto = UpdateTeamStatsOnly(dto, teamPerformanceResponse.Resource);
-                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> response = await TeamsContainer.UpsertItemAsync(updatedDto, partitionKey);
+                NbaTeamPerformanceDbDto updatedDto = UpdateTeamStatsOnly(dto, teamPerformanceResponse.Resource);
+                ItemResponse<NbaTeamPerformanceDbDto> response = await TeamsContainer.UpsertItemAsync(updatedDto, partitionKey);
                 return response.Resource;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
+                NbaTeamPerformanceDbDto newDto = new NbaTeamPerformanceDbDto(
+                    dto.SeasonYear,
+                    dto.ShortName,
+                    dto.FullName,
+                    dto.Nickname,
+                    dto.LogoUrl,
+                    dto.GamesPlayed,
+                    new Entities.Nba.Records(),
+                    dto.Stats
+                );
                 // Create an item in the container representing the Team Performance. 
-                ItemResponse<NbaTeamPerformanceStatsOnlyDbDto> teamPerformanceResponse = await this.TeamsContainer.CreateItemAsync(dto, partitionKey);
+                ItemResponse<NbaTeamPerformanceDbDto> teamPerformanceResponse = await this.TeamsContainer.CreateItemAsync(newDto, partitionKey);
 
                 // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
                 Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", teamPerformanceResponse.Resource.Id, teamPerformanceResponse.RequestCharge);
@@ -160,7 +170,7 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Db
             return originalDto;
         }
 
-        private NbaTeamPerformanceStatsOnlyDbDto UpdateTeamStatsOnly(NbaTeamPerformanceStatsOnlyDbDto newDto, NbaTeamPerformanceStatsOnlyDbDto originalDto)
+        private NbaTeamPerformanceDbDto UpdateTeamStatsOnly(NbaTeamPerformanceStatsOnlyDbDto newDto, NbaTeamPerformanceDbDto originalDto)
         {
             originalDto.Stats.Assists += newDto.Stats.Assists;
             originalDto.Stats.Blocks += newDto.Stats.Blocks;
