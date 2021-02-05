@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos;
+using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaOddsDtos;
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
 using SportsData.NbaDataLoaders.Shared.Exceptions;
 using SportsData.NbaDataLoaders.Shared.Repositories.Db;
@@ -22,12 +23,12 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             _logger = logger;
         }
 
-        public NbaTeamGameDbDto CreateTeamGameFromPerformance(AddTeamPerformanceRequestDto dto)
+        public CompletedGameStatsOnlyDbDto CreateCompletedGameStatsOnlyFromPerformance(AddTeamPerformanceRequestDto dto)
         {
             // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
             var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
             var teamId = string.Join("-", dto.SeasonYear, dto.FullName.Trim().ToUpperInvariant());
-            return new NbaTeamGameDbDto(
+            return new CompletedGameStatsOnlyDbDto(
                 dto.GameStartTime,
                 teamId,
                 partitionKey,
@@ -39,7 +40,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             );
         }
 
-        public CompletedGameDbDto CreateCompletedGameFromPerformance(AddTeamPerformanceRequestDto dto)
+        public CompletedGameDbDto CreateCompletedGameFromPerformance(AddTeamPerformanceRequestDto dto, UpcomingGameDbDto upcomingGameDto)
         {
             // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
             var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
@@ -52,6 +53,8 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 dto.Nickname,
                 dto.OpponentName,
                 "COMPLETED",
+                upcomingGameDto.OverUnder,
+                upcomingGameDto.Spread,
                 dto.Stats
             );
         }
@@ -96,7 +99,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 dto.Stats
                 );
                 await _repository.UpdateTeamStatsAsync(dbDto);
-                return CreateCompletedGameFromPerformance(dto);
+                return CreateCompletedGameFromPerformance(dto, game);
             }
             catch (GameDoesNotExistException ex)
             {
@@ -110,7 +113,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             }
         }
 
-        public async Task<CompletedGameDbDto> UpdatePastTeamStatsOnlyAsync(AddTeamPerformanceRequestDto dto)
+        public async Task<CompletedGameStatsOnlyDbDto> UpdatePastTeamStatsOnlyAsync(AddTeamPerformanceRequestDto dto)
         {
             if(await _repository.DoesGameWithStatsExist(dto))
                 throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.FullName} on {dto.GameStartTime}");
@@ -126,7 +129,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 dto.Stats
                 );
                 await _repository.UpdateTeamStatsOnlyAsync(dbDto);
-                return CreateCompletedGameFromPerformance(dto);
+                return CreateCompletedGameStatsOnlyFromPerformance(dto);
             }
             catch (GameDoesNotExistException ex)
             {

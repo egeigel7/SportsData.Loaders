@@ -22,14 +22,14 @@ namespace SportsData.NbaDataLoaders
             [CosmosDB(
                 databaseName: "BasketballDatabase",
                 collectionName: "Games",
-                ConnectionStringSetting = "CosmosDbConnection")]out NbaTeamGameDbDto document,
+                ConnectionStringSetting = "CosmosDbConnection")]out CompletedGameDbDto document,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
  
-            _service.UpdateTeamStatsAsync(data).Wait();
+            document = _service.UpdateTeamStatsAsync(data).Result;
 
-            document = _service.CreateTeamGameFromPerformance(data);
+            // document = _service.CreateTeamGameFromPerformance(data);
 
             log.LogInformation($"Loader processed {data.FullName}'s game on {data.GameStartTime} .");
 

@@ -7,6 +7,7 @@ using SportsData.NbaDataLoaders.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SportsData.NbaDataLoaders
 {
@@ -28,9 +29,9 @@ namespace SportsData.NbaDataLoaders
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            _service.UpdateTeamStatsAsync(data).Wait();
+            document = _service.UpdateTeamStatsAsync(data).Result;
 
-            document = _service.CreateCompletedGameFromPerformance(data);
+            // document = _service.CreateCompletedGameFromPerformance(data);
 
             log.LogInformation($"Loader processed {data.FullName}'s game on {data.GameStartTime} .");
 

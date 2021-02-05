@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
-using SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaOddsDtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
-    public class CompletedGameDbDto
+    public class CompletedGameStatsOnlyDbDto
     {
-        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string status, OverUnder overUnder, Spread spread, Statistics stats)
+        public CompletedGameStatsOnlyDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string status, Statistics stats)
         {
             Date = DateTime.Parse(date);
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
@@ -17,8 +16,6 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
             Status = status;
-            OverUnder = overUnder;
-            Spread = spread;
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
         [JsonProperty("date")]
@@ -37,10 +34,6 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         public string OpponentId { get; }
         [JsonProperty("status")]
         public string Status { get; }
-        [JsonProperty("overUnder")]
-        public OverUnder OverUnder { get; }
-        [JsonProperty("spread")]
-        public Spread Spread { get; }
         [JsonProperty("stats")]
         public Statistics Stats { get; }
     }
