@@ -29,6 +29,7 @@ namespace SportsData.NbaDataLoaders
                     .Build();
            });
             builder.Services.AddHttpClient();
+            builder.Services.AddLogging();
             builder.Services.AddSingleton<INbaApiService, NbaApiService>();
             builder.Services.AddSingleton<INbaUpdateService, NbaUpdateService>();
             builder.Services.AddSingleton<INbaOddsService, NbaOddsService>();

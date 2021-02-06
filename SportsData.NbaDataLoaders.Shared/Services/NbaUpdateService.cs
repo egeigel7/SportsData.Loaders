@@ -16,8 +16,8 @@ namespace SportsData.NbaDataLoaders.Shared.Services
     {
         private const string LEAGUE_NAME = "NBA";
         INbaDbRepository _repository;
-        ILogger _logger;
-        public NbaUpdateService(INbaDbRepository repository, ILogger logger)
+        ILogger<NbaUpdateService> _logger;
+        public NbaUpdateService(INbaDbRepository repository, ILogger<NbaUpdateService> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -66,7 +66,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             {
                 var game = await _repository.GetUpcomingGameAsync(dto);
                 if (game.Status != "UPCOMING")
-                    throw new IncorrectGameStatusException("The game was not in upcoming status when trying to process");
+                    throw new IncorrectGameStatusException($"The {game.FullName} game was not in upcoming status when trying to process on {game.Date}");
                 var gameSpread = (dto.Stats.PointsFor - dto.Stats.PointsAgainst);
                 var oddsSpread = 0 - double.Parse(game.Spread.Value);
                 var gameTotal = (dto.Stats.PointsFor + dto.Stats.PointsAgainst);

@@ -13,17 +13,18 @@ namespace SportsData.NbaDataLoaders
     public class TimedNbaDataLoader
     {
         INbaApiService _service;
+        ILogger<TimedNbaDataLoader> _logger;
 
-        public TimedNbaDataLoader(INbaApiService service)
+        public TimedNbaDataLoader(INbaApiService service, ILogger<TimedNbaDataLoader> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [FunctionName(nameof(TimedNbaDataLoader))]
         [StorageAccount("AzureWebJobsStorage")]
         public async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer
-            , [Queue("new-game"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
-            , ILogger log)
+            , [Queue("new-game-local"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames)
         {
             var date = DateTime.UtcNow;
             // Call Nba Api games endpoint to get last night's games
@@ -31,11 +32,11 @@ namespace SportsData.NbaDataLoaders
 
             if (playedGames.Count > 0)
             {
-                log.LogInformation("Games found, loading now");
+                _logger.LogInformation("Games found, loading now");
             }
             else
             {
-                log.LogInformation("No games found");
+                _logger.LogInformation("No games found");
             }
 
             playedGames.ForEach(game => newGames.Add(game));

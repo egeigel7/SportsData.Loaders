@@ -19,8 +19,8 @@ namespace SportsData.Infrastructure.Repositories.Nba
         private readonly string NbaApiUrl = $"https://{Environment.GetEnvironmentVariable("NbaApiUri")}";
         private readonly string NbaApiHostName = Environment.GetEnvironmentVariable("NbaApiUri");
         private readonly string NbaApiKey = Environment.GetEnvironmentVariable("NbaApiKey");
-        private readonly ILogger _logger;
-        public NbaApiRepository(IHttpClientFactory factory, ILogger log)
+        private readonly ILogger<NbaApiRepository> _logger;
+        public NbaApiRepository(IHttpClientFactory factory, ILogger<NbaApiRepository> log)
         {
             _client = factory.CreateClient();
             _logger = log;

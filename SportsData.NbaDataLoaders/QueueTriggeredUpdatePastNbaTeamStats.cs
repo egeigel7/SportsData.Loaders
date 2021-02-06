@@ -10,25 +10,26 @@ namespace SportsData.NbaDataLoaders
     public class QueueTriggeredUpdatePastNbaTeamStats
     {
         INbaUpdateService _service;
-        public QueueTriggeredUpdatePastNbaTeamStats(INbaUpdateService service)
+        ILogger<QueueTriggeredUpdatePastNbaTeamStats> _logger;
+        public QueueTriggeredUpdatePastNbaTeamStats(INbaUpdateService service, ILogger<QueueTriggeredUpdatePastNbaTeamStats> logger)
         {
             _service = service;
+            _logger = logger;
         }
         [FunctionName("QueueTriggeredUpdatePastNbaTeamStats")]
         public void Run([QueueTrigger("past-game-stats", Connection = "")] AddTeamPerformanceRequestDto data,
             [CosmosDB(
                 databaseName: "BasketballDatabase",
                 collectionName: "Games",
-                ConnectionStringSetting = "CosmosDbConnection")]out CompletedGameStatsOnlyDbDto document,
-            ILogger log)
+                ConnectionStringSetting = "CosmosDbConnection")]out CompletedGameStatsOnlyDbDto document)
         {
-            log.LogInformation($"C# Queue trigger function processed: {data}");
+            _logger.LogInformation($"C# Queue trigger function processed: {data}");
 
             document = _service.UpdatePastTeamStatsOnlyAsync(data).Result;
 
             // document = _service.CreateCompletedGameFromPerformance(data);
 
-            log.LogInformation($"Loader processed {data.FullName}'s game on {data.GameStartTime} .");
+            _logger.LogInformation($"Loader processed {data.FullName}'s game on {data.GameStartTime} .");
         }
     }
 }
