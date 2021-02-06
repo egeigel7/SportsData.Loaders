@@ -24,7 +24,7 @@ namespace SportsData.NbaDataLoaders
         [FunctionName(nameof(TimedNbaDataLoader))]
         [StorageAccount("AzureWebJobsStorage")]
         public async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer
-            , [Queue("new-game-local"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames)
+            , [Queue("new-game"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames)
         {
             var date = DateTime.UtcNow;
             // Call Nba Api games endpoint to get last night's games

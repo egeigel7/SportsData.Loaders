@@ -23,7 +23,7 @@ namespace SportsData.NbaDataLoaders
         }
         [FunctionName(nameof(QueueTriggeredNbaTeamStatsLoader))]
         public void Run(
-            [QueueTrigger("new-game-local", Connection = "AzureWebJobsStorage")] AddTeamPerformanceRequestDto data,
+            [QueueTrigger("new-game", Connection = "AzureWebJobsStorage")] AddTeamPerformanceRequestDto data,
             [CosmosDB(
                 databaseName: "BasketballDatabase",
                 collectionName: "Games",
