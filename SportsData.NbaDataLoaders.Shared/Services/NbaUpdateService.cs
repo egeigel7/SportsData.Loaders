@@ -45,6 +45,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
             var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
             var teamId = string.Join("-", dto.SeasonYear, partitionKey);
+            var logoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl) ? upcomingGameDto.LogoUrl : dto.LogoUrl;
             return new CompletedGameDbDto(
                 dto.GameStartTime,
                 teamId,
@@ -52,6 +53,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 dto.FullName,
                 dto.Nickname,
                 dto.OpponentName,
+                logoUrl,
                 "COMPLETED",
                 upcomingGameDto.OverUnder,
                 upcomingGameDto.Spread,

@@ -8,7 +8,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
     public class CompletedGameDbDto
     {
-        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string status, OverUnder overUnder, Spread spread, Statistics stats)
+        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, OverUnder overUnder, Spread spread, Statistics stats)
         {
             Date = DateTime.Parse(date);
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
@@ -16,6 +16,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
+            LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl)); ;
             Status = status;
             OverUnder = overUnder;
             Spread = spread;
@@ -35,6 +36,8 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         public string Nickname { get; }
         [JsonProperty("opponentId")]
         public string OpponentId { get; }
+        [JsonProperty("logoUrl")]
+        public string LogoUrl { get; }
         [JsonProperty("status")]
         public string Status { get; }
         [JsonProperty("overUnder")]
