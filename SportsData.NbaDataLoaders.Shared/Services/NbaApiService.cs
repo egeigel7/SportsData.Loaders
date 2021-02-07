@@ -36,7 +36,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             foreach (var game in playedGames.Games)
             {
                 // Check if EndTime is null which means the game never happened
-                if (game.EndTimeUTC == null) continue;
+                if (game.EndTimeUTC == null && game.StatusGame.Equals("Scheduled")) continue;
                 var gameStats = await _repository.GetStatsByGameIdAsync(game.GameId);
                 // Enhanced home team stats
                 var enhancedHomeStats = gameStats.Statistics.Where(s => s.TeamId == game.HTeam.TeamId).First();
