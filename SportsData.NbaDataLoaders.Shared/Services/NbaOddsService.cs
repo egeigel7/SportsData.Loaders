@@ -2,6 +2,7 @@
 using SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests;
 using SportsData.NbaDataLoaders.Shared.Exceptions;
 using SportsData.NbaDataLoaders.Shared.Mappers;
+using SportsData.NbaDataLoaders.Shared.Mappers.Nba;
 using SportsData.NbaDataLoaders.Shared.Repositories.Odds;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,10 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             for (int i = 0; i < spreads.Count; i++)
             {
                 if (!spreads[i].TeamName.Equals(totals[i].TeamName)) throw new SpreadsAndTotalsNotMatchedException("Team Name for spreads and totals do not match");
-                oddsToReturn.Add(new ProcessGameOddsRequestDto(spreads[i].StartTimeUTC, NbaTeamNameMapper.MapTeamName(spreads[i].TeamName), NbaTeamNameMapper.MapTeamName(spreads[i].OpponentsName), spreads[i].Spread, totals[i].OverUnder));
+                var teamName = NbaTeamNameMapper.MapTeamName(spreads[i].TeamName);
+                var teamImage = NbaTeamImageMapper.GetTeamImageLink(teamName);
+                var opponentName = NbaTeamNameMapper.MapTeamName(spreads[i].OpponentsName);
+                oddsToReturn.Add(new ProcessGameOddsRequestDto(spreads[i].StartTimeUTC, teamName, teamImage, opponentName, spreads[i].Spread, totals[i].OverUnder));
             }
             return oddsToReturn;
         }

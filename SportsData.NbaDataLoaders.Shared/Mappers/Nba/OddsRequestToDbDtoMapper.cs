@@ -16,6 +16,7 @@ namespace SportsData.NbaDataLoaders.Shared.Mappers.Nba
                 dto.StartTimeUTC,
                 partitionKey,
                 dto.TeamName,
+                dto.LogoUrl,
                 dto.OpponentsTeamName,
                 "UPCOMING",
                 dto.OverUnder,

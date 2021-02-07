@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SportsData.NbaDataLoaders.Shared.Mappers
+namespace SportsData.NbaDataLoaders.Shared.Mappers.Nba
 {
     public static class NbaTeamNameMapper
     {
