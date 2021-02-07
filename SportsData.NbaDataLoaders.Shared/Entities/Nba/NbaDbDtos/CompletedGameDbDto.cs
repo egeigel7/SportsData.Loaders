@@ -16,7 +16,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
             Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
-            LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl)); ;
+            LogoUrl = logoUrl;// ?? throw new ArgumentNullException(nameof(logoUrl)); ;
             Status = status;
             OverUnder = overUnder;
             Spread = spread;
