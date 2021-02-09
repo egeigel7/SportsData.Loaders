@@ -17,7 +17,7 @@ namespace SportsData.NbaDataLoaders
             _logger = logger;
         }
         [FunctionName(nameof(TimedNbaOddsLoader))]
-        public async Task Run([TimerTrigger("0 0 11 * * *")]TimerInfo myTimer,
+        public async Task Run([TimerTrigger("0 0 15 * * *")]TimerInfo myTimer,
             [Queue("odds"), StorageAccount("AzureWebJobsStorage")] ICollector<ProcessGameOddsRequestDto> oddsToProcess)
         {
             try
