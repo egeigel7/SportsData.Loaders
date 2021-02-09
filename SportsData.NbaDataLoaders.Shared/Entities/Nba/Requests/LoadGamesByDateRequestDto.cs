@@ -7,5 +7,6 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests
     public class LoadGamesByDateRequestDto
     {
         public string Date { get; set; }
+        public bool StatsOnly { get; set; }
     }
 }

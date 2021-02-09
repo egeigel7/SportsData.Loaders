@@ -40,12 +40,6 @@ namespace SportsData.NbaDataLoaders
             }
 
             playedGames.ForEach(game => newGames.Add(game));
-
-            // Call POST game data endpoint on API (deprecated in favor of putting games on a queue instead of calling directly
-            //var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));
-
-            //await Task.WhenAll(tasks);
-
         }
     }
 }

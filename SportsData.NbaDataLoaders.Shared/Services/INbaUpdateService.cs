@@ -8,7 +8,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
     public interface INbaUpdateService
     {
         Task<CompletedGameDbDto> UpdateTeamStatsAsync(AddTeamPerformanceRequestDto dto);
-        Task<CompletedGameStatsOnlyDbDto> UpdatePastTeamStatsOnlyAsync(AddTeamPerformanceRequestDto dto);
+        Task<CompletedGameDbDto> UpdatePastTeamsStatsAsync(LoadPastGameRequestDto dto);
         // NbaTeamGameDbDto CreateTeamGameFromPerformance(AddTeamPerformanceRequestDto dto);
         // CompletedGameDbDto CreateCompletedGameFromPerformance(AddTeamPerformanceRequestDto dto);
     }

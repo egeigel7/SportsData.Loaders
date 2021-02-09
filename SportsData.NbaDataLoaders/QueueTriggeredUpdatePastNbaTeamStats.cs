@@ -17,19 +17,19 @@ namespace SportsData.NbaDataLoaders
             _logger = logger;
         }
         [FunctionName("QueueTriggeredUpdatePastNbaTeamStats")]
-        public void Run([QueueTrigger("past-game-stats", Connection = "AzureWebJobsStorage")] AddTeamPerformanceRequestDto data,
+        public void Run([QueueTrigger("past-game-stats", Connection = "AzureWebJobsStorage")] LoadPastGameRequestDto data,
             [CosmosDB(
                 databaseName: "BasketballDatabase",
                 collectionName: "Games",
-                ConnectionStringSetting = "CosmosDbConnection")]out CompletedGameStatsOnlyDbDto document)
+                ConnectionStringSetting = "CosmosDbConnection")]out CompletedGameDbDto document)
         {
             _logger.LogInformation($"C# Queue trigger function processed: {data}");
 
-            document = _service.UpdatePastTeamStatsOnlyAsync(data).Result;
+            document = _service.UpdatePastTeamsStatsAsync(data).Result;
 
             // document = _service.CreateCompletedGameFromPerformance(data);
 
-            _logger.LogInformation($"Loader processed {data.FullName}'s game on {data.GameStartTime} .");
+            _logger.LogInformation($"Loader processed {data.Game.FullName}'s game on {data.Game.GameStartTime} .");
         }
     }
 }

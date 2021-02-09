@@ -21,11 +21,11 @@ namespace SportsData.NbaDataLoaders
         }
 
         [FunctionName(nameof(LoadNbaDataByDate))]
-        public async void Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] LoadGamesByDateRequestDto dateString
-            , [Queue("past-game-stats"), StorageAccount("AzureWebJobsStorage")] ICollector<AddTeamPerformanceRequestDto> newGames
+        public async void Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] LoadGamesByDateRequestDto request
+            , [Queue("past-game-stats"), StorageAccount("AzureWebJobsStorage")] ICollector<LoadPastGameRequestDto> newGames
             , ILogger log)
         {
-            DateTime date = DateTime.Parse(dateString.Date);
+            DateTime date = DateTime.Parse(request.Date);
             // Call Nba Api games endpoint to get last night's games
             var playedGames = await _service.GetGamesWithStatsByDateAsync(date);
 
@@ -38,7 +38,9 @@ namespace SportsData.NbaDataLoaders
                 log.LogInformation("No games found");
             }
 
-            playedGames.ForEach(game => newGames.Add(game));
+            playedGames.ForEach(game => newGames.Add(new LoadPastGameRequestDto(request.StatsOnly, game)));
+
+
 
             // Call POST game data endpoint on API
             // var tasks = playedGames.Select(g => _service.AddTeamPerformanceDataAsync(g));

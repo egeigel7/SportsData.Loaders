@@ -22,6 +22,18 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             Spread = spread;
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
+        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, Statistics stats)
+        {
+            Date = DateTime.Parse(date);
+            TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
+            TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
+            FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            Nickname = nickname ?? throw new ArgumentNullException(nameof(nickname));
+            OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
+            LogoUrl = logoUrl;// ?? throw new ArgumentNullException(nameof(logoUrl)); ;
+            Status = status;
+            Stats = stats ?? throw new ArgumentNullException(nameof(stats));
+        }
         [JsonProperty("date")]
         public DateTime Date { get; }
         [JsonProperty("id")]

@@ -23,18 +23,20 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             _logger = logger;
         }
 
-        public CompletedGameStatsOnlyDbDto CreateCompletedGameStatsOnlyFromPerformance(AddTeamPerformanceRequestDto dto)
+        public CompletedGameDbDto CreateCompletedGameFromPerformance(AddTeamPerformanceRequestDto dto)
         {
             // string convertedDate = DateTime.Parse(dto.GameStartTime).ToString("yyyyMMdd");
             var partitionKey = string.Join("-", LEAGUE_NAME, dto.FullName.Trim().ToUpperInvariant());
             var teamId = string.Join("-", dto.SeasonYear, dto.FullName.Trim().ToUpperInvariant());
-            return new CompletedGameStatsOnlyDbDto(
+            var logoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl) ? "" : dto.LogoUrl;
+            return new CompletedGameDbDto(
                 dto.GameStartTime,
                 teamId,
                 partitionKey,
                 dto.FullName,
                 dto.Nickname,
                 dto.OpponentName,
+                logoUrl,
                 "COMPLETED",
                 dto.Stats
             );
@@ -115,23 +117,28 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             }
         }
 
-        public async Task<CompletedGameStatsOnlyDbDto> UpdatePastTeamStatsOnlyAsync(AddTeamPerformanceRequestDto dto)
+        public async Task<CompletedGameDbDto> UpdatePastTeamsStatsAsync(LoadPastGameRequestDto dto)
         {
-            if(await _repository.DoesGameWithStatsExist(dto))
-                throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.FullName} on {dto.GameStartTime}");
+            if (!dto.StatsOnly)
+            {
+                return await UpdateTeamStatsAsync(dto.Game);
+            }
+            
+            if(await _repository.DoesGameWithStatsExist(dto.Game))
+                throw new GameAlreadyExistsException($"Game has already been uploaded for {dto.Game.FullName} on {dto.Game.GameStartTime}");
             try
             {
                 NbaTeamPerformanceStatsOnlyDbDto dbDto = new NbaTeamPerformanceStatsOnlyDbDto(
-                dto.SeasonYear,
-                dto.ShortName,
-                dto.FullName,
-                dto.Nickname,
-                dto.LogoUrl,
+                dto.Game.SeasonYear,
+                dto.Game.ShortName,
+                dto.Game.FullName,
+                dto.Game.Nickname,
+                dto.Game.LogoUrl,
                 1,
-                dto.Stats
+                dto.Game.Stats
                 );
                 await _repository.UpdateTeamStatsOnlyAsync(dbDto);
-                return CreateCompletedGameStatsOnlyFromPerformance(dto);
+                return CreateCompletedGameFromPerformance(dto.Game);
             }
             catch (GameDoesNotExistException ex)
             {
