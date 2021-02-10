@@ -8,9 +8,10 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
     public class CompletedGameDbDto
     {
-        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, OverUnder overUnder, Spread spread, Statistics stats)
+        public CompletedGameDbDto(string date, bool isHome, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, OverUnder overUnder, Spread spread, Statistics stats)
         {
             Date = DateTime.Parse(date);
+            IsHome = isHome;
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
@@ -22,9 +23,10 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
             Spread = spread;
             Stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
-        public CompletedGameDbDto(string date, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, Statistics stats)
+        public CompletedGameDbDto(string date, bool isHome, string teamId, string teamKey, string fullName, string nickname, string opponentId, string logoUrl, string status, Statistics stats)
         {
             Date = DateTime.Parse(date);
+            IsHome = isHome;
             TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
@@ -36,6 +38,8 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         }
         [JsonProperty("date")]
         public DateTime Date { get; }
+        [JsonProperty("isHome")]
+        public bool IsHome { get; }
         [JsonProperty("id")]
         public string Id { get { return Date.ToString("yyyyMMdd"); } }
         [JsonProperty("teamId")]

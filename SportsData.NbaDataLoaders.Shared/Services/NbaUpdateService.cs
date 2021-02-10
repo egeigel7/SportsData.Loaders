@@ -31,6 +31,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             var logoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl) ? "" : dto.LogoUrl;
             return new CompletedGameDbDto(
                 dto.GameStartTime,
+                dto.IsHome,
                 teamId,
                 partitionKey,
                 dto.FullName,
@@ -50,6 +51,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             var logoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl) ? upcomingGameDto.LogoUrl : dto.LogoUrl;
             return new CompletedGameDbDto(
                 dto.GameStartTime,
+                upcomingGameDto.IsHome,
                 teamId,
                 partitionKey,
                 dto.FullName,

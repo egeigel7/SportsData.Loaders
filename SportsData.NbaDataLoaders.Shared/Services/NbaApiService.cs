@@ -40,11 +40,11 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 var gameStats = await _repository.GetStatsByGameIdAsync(game.GameId);
                 // Enhanced home team stats
                 var enhancedHomeStats = gameStats.Statistics.Where(s => s.TeamId == game.HTeam.TeamId).First();
-                AddTeamPerformanceRequestDto homeEnhancedStats = EnhanceStats(game.StartTimeUTC, game.HTeam, enhancedHomeStats, game.VTeam.FullName, Convert.ToInt32(game.VTeam.Score.Points), game.SeasonYear);
+                AddTeamPerformanceRequestDto homeEnhancedStats = EnhanceStats(game.StartTimeUTC, true, game.HTeam, enhancedHomeStats, game.VTeam.FullName, Convert.ToInt32(game.VTeam.Score.Points), game.SeasonYear);
                 mappedGames.Add(homeEnhancedStats);
                 // Enhanced visiting team stats
                 var enhancedVisitingTeamStats = gameStats.Statistics.Where(s => s.TeamId == game.VTeam.TeamId).First();
-                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, game.VTeam, enhancedVisitingTeamStats, game.HTeam.FullName, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
+                AddTeamPerformanceRequestDto visitingEnhancedStats = EnhanceStats(game.StartTimeUTC, false, game.VTeam, enhancedVisitingTeamStats, game.HTeam.FullName, Convert.ToInt32(game.HTeam.Score.Points), game.SeasonYear);
                 mappedGames.Add(visitingEnhancedStats);
             }
             return mappedGames;
@@ -56,7 +56,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             await _repository.AddTeamPerformanceAsync(teamPerformanceStats);
         }
 
-        private AddTeamPerformanceRequestDto EnhanceStats(DateTime startTime, NbaApiGameContestantDto team, GameStatisticsDto stats, string opponentsName, int opponentsPointsScored, string seasonYear)
+        private AddTeamPerformanceRequestDto EnhanceStats(DateTime startTime, bool isHome, NbaApiGameContestantDto team, GameStatisticsDto stats, string opponentsName, int opponentsPointsScored, string seasonYear)
         {
             Statistics enhancedStats = new Statistics(
                 Convert.ToInt32(stats.Points),
@@ -89,6 +89,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
             );
             return new AddTeamPerformanceRequestDto(
                 startTime.ToString(),
+                isHome,
                 seasonYear,
                 team.ShortName,
                 team.FullName,

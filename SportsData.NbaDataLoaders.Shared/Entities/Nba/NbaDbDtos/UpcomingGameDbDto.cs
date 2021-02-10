@@ -8,9 +8,10 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
 {
     public class UpcomingGameDbDto
     {
-        public UpcomingGameDbDto(DateTime date, string teamKey, string fullName, string logoUrl, string opponentId, string status, OverUnder overUnder, Spread spread)
+        public UpcomingGameDbDto(DateTime date, bool isHome, string teamKey, string fullName, string logoUrl, string opponentId, string status, OverUnder overUnder, Spread spread)
         {
             Date = date;
+            IsHome = isHome;
             TeamKey = teamKey ?? throw new ArgumentNullException(nameof(teamKey));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
             OpponentId = opponentId ?? throw new ArgumentNullException(nameof(opponentId));
@@ -21,6 +22,8 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.NbaDbDtos
         }
         [JsonProperty("date")]
         public DateTime Date { get; }
+        [JsonProperty("isHome")]
+        public bool IsHome { get; }
         [JsonProperty("id")]
         public string Id { get { return Date.ToString("yyyyMMdd"); } }
         [JsonProperty("teamKey")]

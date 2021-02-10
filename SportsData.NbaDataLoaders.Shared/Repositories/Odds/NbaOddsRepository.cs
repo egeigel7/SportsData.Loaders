@@ -49,7 +49,8 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Odds
                 for(int i=0;i < game.Teams.Count;i++)
                 {
                     var opponentsName = i == 0 ? game.Teams[1] : game.Teams[0];
-                    NbaSpreadsDto teamSpread = new NbaSpreadsDto(game.CommenceTime, game.Teams[i], opponentsName,
+                    bool isHome = opponentsName.Equals(game.HomeTeam) ? false : true;
+                    NbaSpreadsDto teamSpread = new NbaSpreadsDto(game.CommenceTime, isHome, game.Teams[i], opponentsName,
                         new Spread(game.Sites[0].Odds.Spreads.Points[i], game.Sites[0].Odds.Spreads.Odds[i]));
                     spreadsList.Add(teamSpread);
                 }
@@ -84,7 +85,8 @@ namespace SportsData.NbaDataLoaders.Shared.Repositories.Odds
                 for(int i=0; i < game.Teams.Count; i++)
                 {
                     var opponentsName = i == 0 ? game.Teams[1] : game.Teams[0];
-                    NbaTotalsDto teamTotal = new NbaTotalsDto(game.CommenceTime, game.Teams[i], opponentsName,
+                    bool isHome = opponentsName.Equals(game.HomeTeam) ? false : true;
+                    NbaTotalsDto teamTotal = new NbaTotalsDto(game.CommenceTime, isHome, game.Teams[i], opponentsName,
                         new OverUnder(game.Sites[0].Odds.Totals.Points[0], game.Sites[0].Odds.Totals.Odds[0], game.Sites[0].Odds.Totals.Odds[1]));
                     totalsList.Add(teamTotal);
                 }

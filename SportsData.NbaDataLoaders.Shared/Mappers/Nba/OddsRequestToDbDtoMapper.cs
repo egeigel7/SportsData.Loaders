@@ -14,6 +14,7 @@ namespace SportsData.NbaDataLoaders.Shared.Mappers.Nba
             var partitionKey = string.Join("-", LEAGUE_NAME, dto.TeamName.Trim().ToUpperInvariant());
             return new UpcomingGameDbDto(
                 dto.StartTimeUTC,
+                dto.IsHome,
                 partitionKey,
                 dto.TeamName,
                 dto.LogoUrl,

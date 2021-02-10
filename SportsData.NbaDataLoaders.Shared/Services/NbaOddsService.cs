@@ -34,7 +34,7 @@ namespace SportsData.NbaDataLoaders.Shared.Services
                 var teamName = NbaTeamNameMapper.MapTeamName(spreads[i].TeamName);
                 var teamImage = NbaTeamImageMapper.GetTeamImageLink(teamName);
                 var opponentName = NbaTeamNameMapper.MapTeamName(spreads[i].OpponentsName);
-                oddsToReturn.Add(new ProcessGameOddsRequestDto(spreads[i].StartTimeUTC, teamName, teamImage, opponentName, spreads[i].Spread, totals[i].OverUnder));
+                oddsToReturn.Add(new ProcessGameOddsRequestDto(spreads[i].StartTimeUTC, spreads[i].IsHome, teamName, teamImage, opponentName, spreads[i].Spread, totals[i].OverUnder));
             }
             return oddsToReturn;
         }

@@ -6,9 +6,10 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests
 {
     public class AddTeamPerformanceRequestDto
     {
-        public AddTeamPerformanceRequestDto(string gameStartTime, string seasonYear, string shortName, string fullName, string nickname, string logoUrl, string opponentName, Statistics stats)
+        public AddTeamPerformanceRequestDto(string gameStartTime, bool isHome, string seasonYear, string shortName, string fullName, string nickname, string logoUrl, string opponentName, Statistics stats)
         {
             GameStartTime = gameStartTime ?? throw new ArgumentNullException(nameof(gameStartTime));
+            IsHome = isHome;
             SeasonYear = seasonYear ?? throw new ArgumentNullException(nameof(seasonYear));
             ShortName = shortName ?? throw new ArgumentNullException(nameof(shortName));
             FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
@@ -19,6 +20,7 @@ namespace SportsData.NbaDataLoaders.Shared.Entities.Nba.Requests
         }
 
         public string GameStartTime { get; }
+        public bool IsHome { get; }
         public string SeasonYear { get;}
         public string ShortName { get; }
         public string FullName { get; }
